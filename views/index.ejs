@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <script>
+        window.onload = function () {
+
+            signup.addEventListener("click", function () {
+               window.location = "/signup";
+            });
+        };
+    </script>
+</head>
+<body>
+    <h1>Login page</h1>
+    <form action="/profile" method="post">
+        <input type="text" placeholder="login" name="login"> <br>
+        <input type="password" placeholder="password" name="password"> <br> <br>
+        <input type="submit" value="Sign in">
+    </form>
+
+    <input id="signup" type="button" value="Sign up">
+
+</body>
+</html>
