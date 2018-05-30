@@ -34,33 +34,46 @@ app.get('/', (req, res) => {
 
 });
 
+app.post('/', (req, res) => {
+
+    req.session.userId = undefined
+    res.render('index');
+});
+
 app.get('/signup', (req, res) => {
 
-    if(req.session.userId != undefined) {
+    if(!(req.session.userId == undefined)) {
         // logged
-        res.render('profile', {userName: req.session.userName});
+        res.redirect('/profile')
+    } else {
+        res.render('signup', {answer: ""});
     }
 
-    res.render('signup', {answer: ""});
+
 });
 
 app.post('/signup', (req, res) => {
 
-    if(req.session.userId != undefined) {
+    if(!(req.session.userId == undefined)) {
         // logged
-        res.render('profile', {userName: req.session.userName});
+        res.redirect('/profile');
+    } else {
+        database.signup(req, res);
     }
 
-    database.signup(req, res);
+
 
 });
 
 app.get('/profile', (req, res) => {
 
-    res.render('index' /*{ title: 'The index page!' } */);
-    if(req.session.userId != undefined) {
+    if(!(req.session.userId == undefined)) {
         res.render('profile', {userName: req.session.userName});
+    } else {
+        res.redirect('/');
     }
+
+
 });
 
 app.post('/profile', (req, res) => {
@@ -69,7 +82,7 @@ app.post('/profile', (req, res) => {
 
     database.signin(req, res);
     console.log(req.body);
-    res.render('profile', {userName: req.body.login});
+
 
 });
 
