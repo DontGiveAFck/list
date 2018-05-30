@@ -19,6 +19,8 @@ app.use(session({
     saveUninitialized: true
 }));
 
+app.use(express.static(__dirname + '/views'));
+
 app.get('/', (req, res) => {
 
     console.log(req.session.userId);
@@ -36,7 +38,7 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
 
-    req.session.userId = undefined
+    req.session.userId = undefined;
     res.render('index');
 });
 
@@ -61,18 +63,20 @@ app.post('/signup', (req, res) => {
         database.signup(req, res);
     }
 
-
-
 });
 
 app.get('/profile', (req, res) => {
 
     if(!(req.session.userId == undefined)) {
-        res.render('profile', {userName: req.session.userName});
+        //res.render('profile', {userName: req.session.userName});
+        if(req.query.title == undefined) {
+            database.getAllTasks(req, res);
+        } else {
+            database.getTasksByTitle(req, res, req.query.title);
+        }
     } else {
         res.redirect('/');
     }
-
 
 });
 
@@ -85,6 +89,22 @@ app.post('/profile', (req, res) => {
 
 
 });
+
+app.get('/addtask',(req, res) => {
+
+    res.render('addtask');
+});
+
+app.post('/addtask', (req, res) => {
+
+    database.addTask(req, res);
+});
+
+app.post('/removetask', (req, res) => {
+
+    database.removeTask(req, res);
+});
+
 
 
 app.listen(3000, () => {

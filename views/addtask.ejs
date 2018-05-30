@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles/bootstrap.min.css">
+    <script>
+        window.onload = function () {
+
+            addtask.addEventListener('click', function () {
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/addtask');
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
+                var data = {
+                    title: title.value,
+                    text: text.value
+                };
+
+                xhr.send(JSON.stringify(data));
+
+                xhr.onload = function () {
+                    response.innerHTML = this.responseText;
+                }
+
+            });
+
+            profile.addEventListener('click', function () {
+               window.location.href='/profile';
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Add task</h1>
+    <input type="text" placeholder="title" id="title"> <br> <br>
+    <textarea name="text" id="text" cols="33" rows="10" placeholder="text"></textarea> <br>
+    <input type="button" value="Add task" id="addtask">
+    <input type="button" value="Profile" id="profile">
+    <p id="response"></p>
+</body>
+</html>

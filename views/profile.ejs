@@ -5,32 +5,57 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="styles/profile.css">
+    <link rel="stylesheet" href="styles/bootstrap.min.css">
     <title>Document</title>
+    <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
     <script>
+        window.onload = function () {
 
+            addtask.addEventListener('click', function () {
+               window.location.href = '/addtask';
+            });
+
+            searchbtn.addEventListener('click', function () {
+               window.location.href = '/profile?title=' + searchtext.value;
+            });
+
+        }
     </script>
 </head>
 <body>
     <h1>Welcome, <%=userName%> </h1>
+    <div class="list panel panel-primary">
+        <table class="table table-striped sortable">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th id="title">Title</th>
+                <th>Description</th>
+                <th id="date">Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <%- data %>
+            </tbody>
+        </table>
+    </div>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Done</th>
-            <th> </th>
-        </tr>
-        </thead>
-        <tbody>
-        <%- data %>
-        </tbody>
-    </table>
 
     <form action="/" method="post">
-        <input type="submit" value="Log out" id="logout">
+        <input class="btn btn-danger" type="submit" value="Log out" id="logout">
+        <input class="btn btn-primary" type="button" value="Add task" id="addtask">
     </form>
 
+    <form action="/removetask" method="post">
+        <input type="text" placeholder="enter title" name="title">
+        <input class="btn btn-primary" type="submit" value="remove">
+    </form>
+    <br>
+    <input id="searchtext" type="text" placeholder="enter title">
+    <input id="searchbtn" class="btn btn-primary" type="button" value="Search">
+
+
 </body>
+
 </html>

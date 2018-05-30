@@ -1,10 +1,11 @@
 const mysql = require('mysql');
+const htmlspecialchars = require('htmlspecialchars');
 
 
 const connection = mysql.createConnection({
     host     : 'localhost',
     user     : 'root',
-    password : 'asDasD11',
+    password : '12345',
     database : 'todolist'
 });
 connection.connect();
@@ -63,21 +64,43 @@ module.exports = {
 
             results.forEach(function (value, index) {
 
-                tableRows += ' <tr> <td>' +  index +  '</td> <td> ' +  results[index].title + ' </td> <td> ' + results[index].text +'</td> <tr>';
+                tableRows += '<tr> <td>' +  index +  '</td> <td> ' +  htmlspecialchars(results[index].title) + ' </td> <td> ' + htmlspecialchars(results[index].text) + '</td> <td>' + htmlspecialchars(results[index].postDate) + '</td> <tr>';
 
             });
         });
 
         c.on("end", function () {
 
-            res.render('profile', {userName: req.session.userName, data: tableRows});
+            res.render('profile', {userName: htmlspecialchars(req.session.userName), data: tableRows});
+
+        });
+    },
+
+    getTasksByTitle: function (req, res, title) {
+
+        let tableRows = "";
+        let userId = req.session.userId;
+        let c = connection.query("SELECT * FROM tasks WHERE userId = ? AND title = ?",[userId, title], function (err, results, fields) {
+
+            console.log(results);
+
+            results.forEach(function (value, index) {
+
+                tableRows += '<tr> <td>' +  index +  '</td> <td> ' +  htmlspecialchars(results[index].title) + ' </td> <td> ' + htmlspecialchars(results[index].text) + '</td> <td>' + htmlspecialchars(results[index].postDate) + '</td> <tr>';
+
+            });
+        });
+
+        c.on("end", function () {
+
+            res.render('profile', {userName: htmlspecialchars(req.session.userName), data: tableRows});
 
         });
     },
 
     addTask: function (req, res) {
 
-        if(req.session.userid == undefined) {
+        if(req.session.userId == undefined) {
             res.send("<h3>Please, <a href='/'>Sign in</a></h3>");
         }
 
@@ -86,14 +109,28 @@ module.exports = {
         let con = connection.query("INSERT INTO tasks (title, text, userId) VALUES(?, ?, ?)", [req.body.title, req.body.text, req.session.userId], function (err) {
 
             if(err) throw err;
-
-            res.send("Task " + data.title + " added!");
-
+            else {
+                res.send("Task " + htmlspecialchars(req.body.title) + " added!");
+            }
         });
     },
 
     removeTask: function (req, res) {
 
+
+         let title = req.body.title;
+         let userId = req.session.userId;
+
+         let con = connection.query("DELETE FROM tasks WHERE title = ? AND userId = ?", [title, userId], (err, results) => {
+
+             if (err) throw err;
+
+             if(results.length == 0) {
+                 res.send("No tasks with title " + htmlspecialchars(title));
+             } else {
+                 res.send("Tasks with title " + htmlspecialchars(title) + " have been removed. " + '<a href="/profile">Profile</a>');
+             }
+         });
     },
 
 };
