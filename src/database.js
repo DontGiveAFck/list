@@ -5,7 +5,7 @@ const htmlspecialchars = require('htmlspecialchars');
 const connection = mysql.createConnection({
     host     : 'localhost',
     user     : 'root',
-    password : '12345',
+    password : 'asDasD11',
     database : 'todolist'
 });
 connection.connect();

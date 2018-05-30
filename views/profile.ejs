@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="styles/profile.css">
     <link rel="stylesheet" href="styles/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/main.css">
     <title>Document</title>
     <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
     <script>
@@ -18,6 +19,10 @@
 
             searchbtn.addEventListener('click', function () {
                window.location.href = '/profile?title=' + searchtext.value;
+            });
+
+            showall.addEventListener('click', function () {
+               window.location.href = '/profile';
             });
 
         }
@@ -45,15 +50,26 @@
     <form action="/" method="post">
         <input class="btn btn-danger" type="submit" value="Log out" id="logout">
         <input class="btn btn-primary" type="button" value="Add task" id="addtask">
-    </form>
-
-    <form action="/removetask" method="post">
-        <input type="text" placeholder="enter title" name="title">
-        <input class="btn btn-primary" type="submit" value="remove">
+        <input class="btn btn-dark" type="button" value="Show all" id="showall">
     </form>
     <br>
-    <input id="searchtext" type="text" placeholder="enter title">
-    <input id="searchbtn" class="btn btn-primary" type="button" value="Search">
+    <form action="/removetask" method="post">
+
+        <div class="form-group">
+            <label for="searchtext">Enter title for remove</label>
+            <input class="form-control" type="text" id="searchtext">
+        </div>
+        <input class="btn btn-primary" type="submit" value="Remove">
+
+        <div class="form-group">
+            <label for="inputpassword">Enter title for search</label>
+            <input class="form-control" type="text" id="searchtext">
+        </div>
+        <input id="searchbtn" class="btn btn-primary" type="button" value="Search">
+    </form>
+    <br>
+
+
 
 
 </body>

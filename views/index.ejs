@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link rel="stylesheet" href="styles/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/main.css">
     <script>
         window.onload = function () {
 
@@ -20,12 +21,21 @@
 <body>
     <h1>Login page</h1>
     <form action="/profile" method="post">
-        <input type="text" placeholder="login" name="login"> <br>
-        <input type="password" placeholder="password" name="password"> <br> <br>
-        <input type="submit" value="Sign in">
+
+        <div class="form-group">
+            <label for="inputlogin">Enter login</label>
+            <input class="form-control" type="text" id="inputlogin" name="login">
+        </div>
+
+        <div class="form-group">
+            <label for="inputpassword">Enter password</label>
+            <input class="form-control" type="password" id="inputpassword" name="password">
+        </div>
+        <input type="submit" class="btn btn-success" value="Sign in">
+        <input id="signup" class="btn btn-dark" type="button" value="Sign up">
     </form>
 
-    <input id="signup" type="button" value="Sign up">
+
 
 </body>
 </html>
