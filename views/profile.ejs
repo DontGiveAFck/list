@@ -48,11 +48,7 @@
 
     <nav aria-label="Page navigation example">
         <ul class="pagination">
-            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            <%- pages%>
         </ul>
     </nav>
 
@@ -66,7 +62,7 @@
 
         <div class="form-group">
             <label for="searchtext">Enter title for remove</label>
-            <input class="form-control" type="text" id="searchtext">
+            <input class="form-control" type="text" id="remove" name="title">
         </div>
         <input class="btn btn-primary" type="submit" value="Remove">
 
@@ -77,9 +73,6 @@
         <input id="searchbtn" class="btn btn-primary" type="button" value="Search">
     </form>
     <br>
-
-
-
 
 </body>
 

@@ -1,22 +1,82 @@
 const mysql = require('mysql');
 const htmlspecialchars = require('htmlspecialchars');
+const config = require('./config');
 
 
-const connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : 'asDasD11',
-    database : 'todolist'
-});
+let connection = mysql.createConnection(config);
 
 connection.connect((err) => {
-    if (err) {
-        if (err) {
-            console.error('No connection to DB, trying to create database and tables...');
 
+    if (err) {
+        console.log(err);
+
+        if (err.code == 'ER_ACCESS_DENIED_ERROR') {
+            console.log("Error: Access denied to MySQL server.");
             return;
         }
 
+        if (err.code == 'ER_BAD_DB_ERROR') {
+
+            console.error('Error: No connection to DB, trying create database and tables...');
+
+            connection = mysql.createConnection({
+                host     : config.host,
+                user     : config.user,
+                password : config.password
+            });
+
+            connection.query("SHOW DATABASES", (err, results) => {
+
+                console.log(results);
+
+
+            });
+
+            connection.query("create database todolist", (err) => {
+
+                if (err) {
+                    console.log("Error: Can't create DATABASE 'todolist'");
+                    console.log(err);
+                    throw err;
+                }
+
+                connection.query("use todolist", (err) => {
+                    throw err;
+
+                    console.log("DATABASE 'todolist' created");
+
+                    connection.query("CREATE TABLE users(id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT, login VARCHAR(30) NOT NULL, password TEXT NOT NULL, email VARCHAR(50) NOT NULL, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)", (err) => {
+
+                        if (err) {
+                            console.log("Error: Can't create TABLE 'users'");
+                            throw err;
+                        }
+
+                        console.log("TABLE 'users' created");
+                        connection.query("CREATE TABLE tasks(id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT, title VARCHAR(50) NOT NULL, text TEXT NOT NULL, postDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP", (err) => {
+
+                            if (err) {
+                                console.log("Error: Can't create TABLE 'tasks'");
+                                throw err;
+                            }
+
+                            console.log("TABLE 'tasks' CREATED");
+                            console.log("DATABASE and TABLES have been created successful!");
+
+                            connection = mysql.createConnection({
+                                host     : config.host,
+                                user     : config.user,
+                                password : config.password,
+                                database : 'todolist'
+                            });
+                        });
+                    });
+                });
+            });
+        }
+
+
+    } else {
         console.log('connected to DB as id ' + connection.threadId);
     }
 });
@@ -69,23 +129,31 @@ module.exports = {
     getAllTasks: function (req, res) {
 
         let tableRows = "";
-        let pages = 0;
+        let pages = "";
         let itemsOnPage = 5;
         let userId = req.session.userId;
-        let c = connection.query("SELECT * FROM tasks WHERE userId = ?",[userId], function (err, results, fields) {
+        console.log("PAGE: ", req.query.page);
+        let from = (Number.parseInt(req.query.page) - 1) * itemsOnPage;
+        let c = connection.query("SELECT * FROM tasks WHERE userId = ? LIMIT ? OFFSET ?",[userId, itemsOnPage, from ], function (err, results, fields) {
 
-            console.log(results);
+            console.log(err);
 
             results.forEach(function (value, index) {
 
-                tableRows += '<tr> <td>' +  index +  '</td> <td> ' +  htmlspecialchars(results[index].title) + ' </td> <td> ' + htmlspecialchars(results[index].text) + '</td> <td>' + htmlspecialchars(results[index].postDate) + '</td> <tr>';
-
+                tableRows += '<tr> <td>' +  (index+1) +  '</td> <td> ' +  htmlspecialchars(results[index].title) + ' </td> <td> ' + htmlspecialchars(results[index].text) + '</td> <td>' + htmlspecialchars(results[index].postDate) + '</td> <tr>';
             });
 
             let pageNum = Math.ceil(results.length / itemsOnPage);
 
 
 
+            for(let i = 1; i <= pageNum; i++) {
+
+                pages += '<li class="page-item"><a class="page-link" href="?page=' + i +'">' + i + '</a></li>';
+            }
+
+            console.log(tableRows);
+            console.log(pages);
         });
 
         c.on("end", function () {
@@ -94,6 +162,7 @@ module.exports = {
 
         });
     },
+
 
     getTasksByTitle: function (req, res, title) {
 
