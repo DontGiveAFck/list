@@ -8,7 +8,19 @@ const connection = mysql.createConnection({
     password : '12345',
     database : 'todolist'
 });
-connection.connect();
+
+connection.connect((err) => {
+    if (err) {
+        if (err) {
+            console.error('No connection to DB, trying to create database and tables...');
+
+            return;
+        }
+
+        console.log('connected to DB as id ' + connection.threadId);
+    }
+});
+
 
 module.exports = {
 
