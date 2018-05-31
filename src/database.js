@@ -5,7 +5,7 @@ const htmlspecialchars = require('htmlspecialchars');
 const connection = mysql.createConnection({
     host     : 'localhost',
     user     : 'root',
-    password : '12345',
+    password : 'asDasD11',
     database : 'todolist'
 });
 
@@ -69,6 +69,8 @@ module.exports = {
     getAllTasks: function (req, res) {
 
         let tableRows = "";
+        let pages = 0;
+        let itemsOnPage = 5;
         let userId = req.session.userId;
         let c = connection.query("SELECT * FROM tasks WHERE userId = ?",[userId], function (err, results, fields) {
 
@@ -79,11 +81,16 @@ module.exports = {
                 tableRows += '<tr> <td>' +  index +  '</td> <td> ' +  htmlspecialchars(results[index].title) + ' </td> <td> ' + htmlspecialchars(results[index].text) + '</td> <td>' + htmlspecialchars(results[index].postDate) + '</td> <tr>';
 
             });
+
+            let pageNum = Math.ceil(results.length / itemsOnPage);
+
+
+
         });
 
         c.on("end", function () {
 
-            res.render('profile', {userName: htmlspecialchars(req.session.userName), data: tableRows});
+            res.render('profile', {userName: htmlspecialchars(req.session.userName), data: tableRows, pages: pages});
 
         });
     },
