@@ -12,7 +12,8 @@ connection.connect((err) => {
 
         if (err.code == 'ER_ACCESS_DENIED_ERROR') {
             console.log("Error: Access denied to MySQL server.");
-            return;
+
+            throw err;
         }
 
         if (err.code == 'ER_BAD_DB_ERROR') {
@@ -32,20 +33,21 @@ connection.connect((err) => {
 
             });
 
-            connection.query("create database todolist", (err) => {
+            connection.query("create database todoist", (err) => {
 
                 if (err) {
-                    console.log("Error: Can't create DATABASE 'todolist'");
+                    console.log("Error: Can't create DATABASE 'todoist'");
                     console.log(err);
                     throw err;
                 }
 
-                connection.query("use todolist", (err) => {
-                    throw err;
+                connection.query("use todoist", (err) => {
 
-                    console.log("DATABASE 'todolist' created");
+                    if (err) throw err;
 
-                    connection.query("CREATE TABLE users(id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT, login VARCHAR(30) NOT NULL, password TEXT NOT NULL, email VARCHAR(50) NOT NULL, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)", (err) => {
+                    console.log("DATABASE 'todoist' created");
+
+                    connection.query("CREATE TABLE users(id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY, login VARCHAR(30) NOT NULL, password TEXT NOT NULL, email VARCHAR(50) NOT NULL, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)", (err) => {
 
                         if (err) {
                             console.log("Error: Can't create TABLE 'users'");
@@ -53,7 +55,7 @@ connection.connect((err) => {
                         }
 
                         console.log("TABLE 'users' created");
-                        connection.query("CREATE TABLE tasks(id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT, title VARCHAR(50) NOT NULL, text TEXT NOT NULL, postDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP", (err) => {
+                        connection.query("CREATE TABLE tasks(id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY, title VARCHAR(50) NOT NULL, text TEXT NOT NULL, postDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, userId INT(10) UNSIGNED NOT NULL)", (err) => {
 
                             if (err) {
                                 console.log("Error: Can't create TABLE 'tasks'");
@@ -67,7 +69,7 @@ connection.connect((err) => {
                                 host     : config.host,
                                 user     : config.user,
                                 password : config.password,
-                                database : 'todolist'
+                                database : 'todoist'
                             });
                         });
                     });
@@ -131,44 +133,55 @@ module.exports = {
         let tableRows = "";
         let pages = "";
         let itemsOnPage = 5;
+        let pageNum = 0;
+
         let userId = req.session.userId;
-        console.log("PAGE: ", req.query.page);
+
         let from = (Number.parseInt(req.query.page) - 1) * itemsOnPage;
-        let c = connection.query("SELECT * FROM tasks WHERE userId = ? LIMIT ? OFFSET ?",[userId, itemsOnPage, from ], function (err, results, fields) {
 
-            console.log(err);
+        connection.query("SELECT * FROM tasks WHERE userId = ?", [userId], (err, results) => {
 
-            results.forEach(function (value, index) {
+            if (err) throw err;
 
-                tableRows += '<tr> <td>' +  (index+1) +  '</td> <td> ' +  htmlspecialchars(results[index].title) + ' </td> <td> ' + htmlspecialchars(results[index].text) + '</td> <td>' + htmlspecialchars(results[index].postDate) + '</td> <tr>';
+            pageNum = Math.ceil(results.length / itemsOnPage);
+
+            let c = connection.query("SELECT * FROM tasks WHERE userId = ? LIMIT ? OFFSET ?",[userId, itemsOnPage, from ], function (err, results, fields) {
+
+                if (err) throw err;
+
+                results.forEach(function (value, index) {
+
+                    tableRows += '<tr> <td>' +  (index+1) +  '</td> <td> ' +  htmlspecialchars(results[index].title) + ' </td> <td> ' + htmlspecialchars(results[index].text) + '</td> <td>' + htmlspecialchars(results[index].postDate) + '</td> <tr>';
+                });
+
+
+                for(let i = 1; i <= pageNum; i++) {
+
+                    pages += '<li class="page-item"><a class="page-link" href="?page=' + i +'">' + i + '</a></li>';
+                }
+
             });
 
-            let pageNum = Math.ceil(results.length / itemsOnPage);
+            c.on("end", function () {
 
+                res.render('profile', {userName: htmlspecialchars(req.session.userName), data: tableRows, pages: pages});
 
-
-            for(let i = 1; i <= pageNum; i++) {
-
-                pages += '<li class="page-item"><a class="page-link" href="?page=' + i +'">' + i + '</a></li>';
-            }
-
-            console.log(tableRows);
-            console.log(pages);
+            });
         });
 
-        c.on("end", function () {
-
-            res.render('profile', {userName: htmlspecialchars(req.session.userName), data: tableRows, pages: pages});
-
-        });
     },
 
 
     getTasksByTitle: function (req, res, title) {
 
         let tableRows = "";
+        let pages = "";
+        let itemsOnPage = 5;
+        let pageNum = 0;
         let userId = req.session.userId;
-        let c = connection.query("SELECT * FROM tasks WHERE userId = ? AND title = ?",[userId, title], function (err, results, fields) {
+
+      //  connection.query("SELECT * FROM tasks WHERE ")
+        let c = connection.query("SELECT * FROM tasks WHERE userId = ? AND title = ? LIMIT ? OFFSET ?",[userId, title], function (err, results, fields) {
 
             console.log(results);
 

@@ -68,10 +68,8 @@ app.get('/profile', (req, res) => {
         if(req.query.title == undefined) {
 
             if(req.query.page == undefined) {
-                console.log("PAGE CHANGED");
                 req.query.page = 1;
             }
-
 
             database.getAllTasks(req, res);
         } else {
