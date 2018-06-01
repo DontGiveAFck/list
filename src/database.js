@@ -33,19 +33,19 @@ connection.connect((err) => {
 
             });
 
-            connection.query("create database todoist", (err) => {
+            connection.query("create database todolist", (err) => {
 
                 if (err) {
-                    console.log("Error: Can't create DATABASE 'todoist'");
+                    console.log("Error: Can't create DATABASE 'todolist'");
                     console.log(err);
                     throw err;
                 }
 
-                connection.query("use todoist", (err) => {
+                connection.query("use todolist", (err) => {
 
                     if (err) throw err;
 
-                    console.log("DATABASE 'todoist' created");
+                    console.log("DATABASE 'todolist' created");
 
                     connection.query("CREATE TABLE users(id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY, login VARCHAR(30) NOT NULL, password TEXT NOT NULL, email VARCHAR(50) NOT NULL, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)", (err) => {
 
@@ -69,7 +69,7 @@ connection.connect((err) => {
                                 host     : config.host,
                                 user     : config.user,
                                 password : config.password,
-                                database : 'todoist'
+                                database : 'todolist'
                             });
                         });
                     });
@@ -180,23 +180,37 @@ module.exports = {
         let pageNum = 0;
         let userId = req.session.userId;
 
-      //  connection.query("SELECT * FROM tasks WHERE ")
-        let c = connection.query("SELECT * FROM tasks WHERE userId = ? AND title = ? LIMIT ? OFFSET ?",[userId, title], function (err, results, fields) {
+        let from = (Number.parseInt(req.query.page) - 1) * itemsOnPage;
 
-            console.log(results);
+        connection.query("SELECT * FROM tasks WHERE userId = ? AND title = ?", [userId, title], (err, results) => {
 
-            results.forEach(function (value, index) {
+            if(err) throw err;
 
-                tableRows += '<tr> <td>' +  index +  '</td> <td> ' +  htmlspecialchars(results[index].title) + ' </td> <td> ' + htmlspecialchars(results[index].text) + '</td> <td>' + htmlspecialchars(results[index].postDate) + '</td> <tr>';
+            pageNum = Math.ceil(results.length / itemsOnPage);
+
+            let c = connection.query("SELECT * FROM tasks WHERE userId = ? AND title = ? LIMIT ? OFFSET ?",[userId, title, itemsOnPage, from], function (err, results, fields) {
+
+                console.log(results);
+
+                results.forEach(function (value, index) {
+
+                    tableRows += '<tr> <td>' +  index +  '</td> <td> ' +  htmlspecialchars(results[index].title) + ' </td> <td> ' + htmlspecialchars(results[index].text) + '</td> <td>' + htmlspecialchars(results[index].postDate) + '</td> <tr>';
+
+                });
+            });
+
+            for(let i = 1; i <= pageNum; i++) {
+
+                pages += '<li class="page-item"><a class="page-link" href="?page=' + i + '&title=' + title +'">' + i + '</a></li>';
+            }
+
+            c.on("end", function () {
+
+                res.render('profile', {userName: htmlspecialchars(req.session.userName), data: tableRows, pages: pages});
 
             });
         });
 
-        c.on("end", function () {
-
-            res.render('profile', {userName: htmlspecialchars(req.session.userName), data: tableRows});
-
-        });
     },
 
     addTask: function (req, res) {

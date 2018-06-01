@@ -72,8 +72,14 @@ app.get('/profile', (req, res) => {
             }
 
             database.getAllTasks(req, res);
+
         } else {
+
+            if(req.query.page == undefined)
+                req.query.page = 1;
+
             database.getTasksByTitle(req, res, req.query.title);
+
         }
     } else {
         res.redirect('/');

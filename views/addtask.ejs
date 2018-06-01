@@ -8,6 +8,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="styles/bootstrap.min.css">
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/addtask.css">
     <script>
         window.onload = function () {
 
@@ -38,10 +39,15 @@
 </head>
 <body>
     <h1>Add task</h1>
-    <input type="text" placeholder="title" id="title"> <br> <br>
+
+    <div class="form-group">
+        <label for="searchtext">Enter title</label>
+        <input class="form-control" type="text" id="title" name="title">
+    </div>
+
     <textarea name="text" id="text" cols="33" rows="10" placeholder="text"></textarea> <br>
-    <input type="button" value="Add task" id="addtask">
-    <input type="button" value="Profile" id="profile">
+    <input class="btn btn-primary" type="button" value="Add task" id="addtask">
+    <input class="btn btn-primary" type="button" value="Profile" id="profile">
     <p id="response"></p>
 </body>
 </html>
