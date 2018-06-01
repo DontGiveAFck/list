@@ -102,17 +102,35 @@ app.post('/profile', (req, res) => {
 
 app.get('/addtask',(req, res) => {
 
-    res.render('addtask');
+    if(req.session.userId == undefined) {
+        res.redirect('/');
+    } else {
+        res.render('addtask');
+    }
+
+
 });
 
 app.post('/addtask', (req, res) => {
 
-    database.addTask(req, res);
+    if(req.session.userId == undefined) {
+        res.redirect('/');
+    } else {
+        res.render('addtask');
+    }
+
+
 });
 
 app.post('/removetask', (req, res) => {
 
-    database.removeTask(req, res);
+    if(req.session.userId == undefined) {
+        res.redirect('/');
+    } else {
+        database.removeTask(req, res);
+    }
+
+
 });
 
 

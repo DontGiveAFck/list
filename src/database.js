@@ -91,6 +91,8 @@ module.exports = {
         let login = req.body.login;
         let password = req.body.password;
 
+        //TODO: validation
+
         console.log(req.body);
         connection.query('SELECT * FROM users WHERE login = ? AND password = ?', [login, password], (err, results) => {
 
@@ -117,7 +119,15 @@ module.exports = {
         console.log(req.body);
 
         //TODO: validation
+        /*
+        if (login.length < 5 || login.length > 30) {
+            res.send('Choose login with length more than 5 & less than 30');
+        }
 
+        if (password.length < 5 || password.length > 50) {
+            res.send('Choose password with length more than 5 & less than 50');
+        }
+        */
         connection.query('INSERT INTO users (login, password, email) VALUES(?, ?, ?)', [login, password, email], (err, results) => {
             if (err) throw new Error();
 
@@ -154,7 +164,7 @@ module.exports = {
                     tableRows += '<tr> <td>' +  (index+1) +  '</td> <td> ' +  htmlspecialchars(results[index].title) + ' </td> <td> ' + htmlspecialchars(results[index].text) + '</td> <td>' + htmlspecialchars(results[index].postDate) + '</td> <tr>';
                 });
 
-
+                
                 for(let i = 1; i <= pageNum; i++) {
 
                     pages += '<li class="page-item"><a class="page-link" href="?page=' + i +'">' + i + '</a></li>';
@@ -247,5 +257,6 @@ module.exports = {
              }
          });
     },
+
 
 };
