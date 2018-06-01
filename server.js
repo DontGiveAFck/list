@@ -79,7 +79,6 @@ app.get('/profile', (req, res) => {
                 req.query.page = 1;
 
             database.getTasksByTitle(req, res, req.query.title);
-
         }
     } else {
         res.redirect('/');

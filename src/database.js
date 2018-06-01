@@ -128,12 +128,22 @@ module.exports = {
             res.send('Choose password with length more than 5 & less than 50');
         }
         */
-        connection.query('INSERT INTO users (login, password, email) VALUES(?, ?, ?)', [login, password, email], (err, results) => {
-            if (err) throw new Error();
 
-            else {
-                res.render('signup', {answer: "Successful! Go to main page"});
+        connection.query('SELECT * FROM users WHERE login = ? OR email = ?', [login, email], (err, results) => {
+
+            if (results.length > 0) {
+                res.send("User with login '" + login + "' or email '" + email + "' already exist.");
+                return;
             }
+
+            connection.query('INSERT INTO users (login, password, email) VALUES(?, ?, ?)', [login, password, email], (err, results) => {
+                if (err) throw new Error();
+
+                else {
+                    res.render('signup', {answer: "Successful! Go to main page"});
+                }
+            });
+
         });
 
     },
