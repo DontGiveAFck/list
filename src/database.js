@@ -1,6 +1,9 @@
 const mysql = require('mysql');
 const htmlspecialchars = require('htmlspecialchars');
 const config = require('./config');
+const bcrypt = require('bcrypt');
+
+const saltRounds = 10;
 
 
 let connection = mysql.createConnection(config);
@@ -26,12 +29,6 @@ connection.connect((err) => {
                 password : config.password
             });
 
-            connection.query("SHOW DATABASES", (err, results) => {
-
-                console.log(results);
-
-
-            });
 
             connection.query("create database todolist", (err) => {
 
@@ -47,7 +44,7 @@ connection.connect((err) => {
 
                     console.log("DATABASE 'todolist' created");
 
-                    connection.query("CREATE TABLE users(id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY, login VARCHAR(30) NOT NULL, password TEXT NOT NULL, email VARCHAR(50) NOT NULL, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)", (err) => {
+                    connection.query("CREATE TABLE users(id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY, login VARCHAR(30) NOT NULL, password VARCHAR(256) NOT NULL, email VARCHAR(50) NOT NULL, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)", (err) => {
 
                         if (err) {
                             console.log("Error: Can't create TABLE 'users'");
@@ -91,23 +88,43 @@ module.exports = {
         let login = req.body.login;
         let password = req.body.password;
 
+
         //TODO: validation
 
         console.log(req.body);
-        connection.query('SELECT * FROM users WHERE login = ? AND password = ?', [login, password], (err, results) => {
 
-            if(results.length == 1) {
+        bcrypt.hash(password, saltRounds, (err, hash) => {
 
-                req.session.userId = results[0].id;
-                console.log("userId " + req.session.userId);
-                req.session.userName = results[0].login;
+            if(err) throw err;
 
-                this.getAllTasks(req, res);
-            } else {
+            connection.query('SELECT * FROM users WHERE login = ?', [login], (err, results) => {
 
-                res.send("<p>Incorrect login or password, please <a href='/'>Try again</a></p>");
-            }
+                if(results.length == 1) {
+                    console.log(hash);
+                    bcrypt.compare(password, hash, (err, valid) => {
+
+                        if (valid == true) {
+                            console.log(valid);
+                            req.session.userId = results[0].id;
+                            console.log("userId " + req.session.userId);
+                            req.session.userName = results[0].login;
+
+                            this.getAllTasks(req, res);
+                        } else {
+
+                            res.send("<p>Incorrect login or password, please <a href='/'>Try again</a></p>");
+                        }
+                    });
+
+
+                } else {
+
+                    res.send("<p>Incorrect login or password, please <a href='/'>Try again</a></p>");
+                }
+            });
+
         });
+
     },
 
     signup: function (req, res) {
@@ -115,6 +132,8 @@ module.exports = {
         let login = req.body.login;
         let password = req.body.password;
         let email = req.body.email;
+
+
 
         console.log(req.body);
 
@@ -129,22 +148,29 @@ module.exports = {
         }
         */
 
-        connection.query('SELECT * FROM users WHERE login = ? OR email = ?', [login, email], (err, results) => {
+        bcrypt.hash(password, saltRounds, (err, hash) => {
 
-            if (results.length > 0) {
-                res.send("User with login '" + login + "' or email '" + email + "' already exist.");
-                return;
-            }
+            if(err) throw err;
 
-            connection.query('INSERT INTO users (login, password, email) VALUES(?, ?, ?)', [login, password, email], (err, results) => {
-                if (err) throw new Error();
+            connection.query('SELECT * FROM users WHERE login = ? OR email = ?', [login, email], (err, results) => {
 
-                else {
-                    res.render('signup', {answer: "Successful! Go to main page"});
+                if (results.length > 0) {
+                    res.send("User with login '" + login + "' or email '" + email + "' already exist.");
+                    return;
                 }
-            });
 
+                connection.query('INSERT INTO users (login, password, email) VALUES(?, ?, ?)', [login, hash, email], (err, results) => {
+                    if (err) throw err;
+
+                    else {
+                        res.render('signup', {answer: "Successful! Go to main page"});
+                    }
+                });
+
+            });
         });
+
+
 
     },
 
