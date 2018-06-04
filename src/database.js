@@ -26,12 +26,6 @@ connection.connect((err) => {
                 password : config.password
             });
 
-            connection.query("SHOW DATABASES", (err, results) => {
-
-                console.log(results);
-
-
-            });
 
             connection.query("create database todolist", (err) => {
 
