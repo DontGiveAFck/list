@@ -31,6 +31,7 @@ module.exports = {
             c.on("end", function () {
 
                 console.log(results.length);
+
                 res.render('profile', {userName: htmlspecialchars(req.session.userName), data: data, pageNum: pageNum});
 
             });
@@ -85,7 +86,7 @@ module.exports = {
         if(req.session.userId == undefined) {
             res.redirec('/');
         }
-
+    
         let con = connection.query("INSERT INTO tasks (title, text, userId) VALUES(?, ?, ?)", [req.body.title, req.body.text, req.session.userId], function (err) {
 
             if(err) throw err;

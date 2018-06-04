@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const user = require('../user');
 
 router.get('/', (req, res) => {
 
@@ -16,7 +17,7 @@ router.post('/', (req, res) => {
         // logged
         res.redirect('/profile')
     } else {
-        res.render('signup', {answer: ""});
+        user.signup(req, res);
     }
 });
 
