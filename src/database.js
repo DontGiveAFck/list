@@ -210,7 +210,6 @@ module.exports = {
 
             let c = connection.query("SELECT * FROM tasks WHERE userId = ? AND title = ? LIMIT ? OFFSET ?",[userId, title, itemsOnPage, from], function (err, results, fields) {
 
-                console.log(results);
 
                 results.forEach(function (value, index) {
 
@@ -267,6 +266,11 @@ module.exports = {
              }
          });
     },
+
+    sortByTitle: function (req, res) {
+
+        let title = req.body.title;
+    }
 
 
 };
