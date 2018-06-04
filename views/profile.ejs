@@ -14,7 +14,7 @@
         window.onload = function () {
 
             addtask.addEventListener('click', function () {
-               window.location.href = '/addtask';
+               window.location.href = '/task/add';
             });
 
             searchbtn.addEventListener('click', function () {
@@ -42,14 +42,20 @@
             </tr>
             </thead>
             <tbody>
-            <%- data %>
+            <% for(var i = 0; i < data.length; i++) { %>
+            <tr> <td> <%-i+1%> </td> <td> <%-data[i].title%></td> <td> <%-data[i].text%> </td> <td> <%-data[i].postDate%></td> <tr>
+            <%}%>
             </tbody>
         </table>
     </div>
 
     <nav aria-label="Page navigation example">
         <ul class="pagination">
-            <%- pages%>
+
+            <% for(var i = 1; i <= pageNum; i++) {%>
+
+            <li class="page-item"><a class="page-link" href="?page=<%=i%>"><%=i%></a></li>
+            <%} %>
         </ul>
     </nav>
 
@@ -59,7 +65,7 @@
         <input class="btn btn-dark" type="button" value="Show all" id="showall">
     </form>
     <br>
-    <form action="/removetask" method="post">
+    <form action="/task/remove" method="post">
 
         <div class="form-group">
             <label for="searchtext">Enter title for remove</label>
