@@ -34,7 +34,7 @@ module.exports = {
 
             } else {
 
-                res.send("<p>Incorrect login or password, please <a href='/'>Try again</a></p>");
+                res.status(400).send("<p>Incorrect login or password, please <a href='/'>Try again</a></p>");
             }
         });
 
@@ -42,11 +42,10 @@ module.exports = {
 
     signup: function (req, res) {
 
+        console.log("REQ BODY", req.body);
         let login = req.body.login;
         let password = req.body.password;
         let email = req.body.email;
-
-        console.log(req.body);
 
         bcrypt.hash(password, saltRounds, (err, hash) => {
 
@@ -56,7 +55,7 @@ module.exports = {
 
                 if (err) {
                     if (err.code == 'ER_DUP_ENTRY') {
-                        res.send("User with login '" + login + "' or email '" + email + "' already exist.");
+                        res.status(400).send("User with login '" + login + "' or email '" + email + "' already exist.");
                     } else {
                         throw err;
                     }
