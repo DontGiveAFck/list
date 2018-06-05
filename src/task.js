@@ -30,9 +30,13 @@ module.exports = {
 
             c.on("end", function () {
 
+                let obj = {
+                    pageNum: pageNum
+                };
+
                 console.log(results.length);
 
-                res.render('profile', {userName: htmlspecialchars(req.session.userName), data: data, pageNum: pageNum});
+                res.render('profile', {userName: htmlspecialchars(req.session.userName), data: data, obj: obj});
 
             });
         });
@@ -42,8 +46,6 @@ module.exports = {
 
     getTasksByTitle: function (req, res, title) {
 
-        let tableRows = "";
-        let pages = "";
         let itemsOnPage = 5;
         let pageNum = 0;
         let userId = req.session.userId;
@@ -54,27 +56,26 @@ module.exports = {
 
             if(err) throw err;
 
+            let data;
+
             pageNum = Math.ceil(results.length / itemsOnPage);
 
             let c = connection.query("SELECT * FROM tasks WHERE userId = ? AND title = ? LIMIT ? OFFSET ?",[userId, title, itemsOnPage, from], function (err, results, fields) {
 
+                data = results;
 
-                results.forEach(function (value, index) {
-
-                    tableRows += '<tr> <td>' +  index +  '</td> <td> ' +  htmlspecialchars(results[index].title) + ' </td> <td> ' + htmlspecialchars(results[index].text) + '</td> <td>' + htmlspecialchars(results[index].postDate) + '</td> <tr>';
-
-                });
+                console.log(data);
             });
 
-            for(let i = 1; i <= pageNum; i++) {
-
-                pages += '<li class="page-item"><a class="page-link" href="?page=' + i + '&title=' + title +'">' + i + '</a></li>';
-            }
 
             c.on("end", function () {
 
-               // res.render('profile', {userName: htmlspecialchars(req.session.userName), data: tableRows, pages: pages});
-                res.render('profile', {userName: htmlspecialchars(req.session.userName), data: tableRows, pageNum: pageNum, title: title});
+                let obj = {
+                    title: title,
+                    pageNum: pageNum
+                };
+
+                res.render('profile', {userName: htmlspecialchars(req.session.userName), data: data, obj: obj});
 
             });
         });
@@ -84,7 +85,7 @@ module.exports = {
     addTask: function (req, res) {
 
         if(req.session.userId == undefined) {
-            res.redirec('/');
+            res.redirect('/');
         }
     
         let con = connection.query("INSERT INTO tasks (title, text, userId) VALUES(?, ?, ?)", [req.body.title, req.body.text, req.session.userId], function (err) {

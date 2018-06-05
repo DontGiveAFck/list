@@ -1,0 +1,12 @@
+<%if(obj.title == undefined) {%>
+<% for(var i = 1; i <= obj.pageNum; i++) {%>
+
+<li class="page-item"><a class="page-link" href="?page=<%=i%>"><%=i%></a></li>
+<%} %>
+<%} else {%>
+
+<% for(var i = 1; i <= obj.pageNum; i++) {%>
+
+<li class="page-item"><a class="page-link" href="?page=<%=i%>&title=<%=obj.title%>"><%=i%></a></li>
+<%} %>
+<%}%>

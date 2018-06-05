@@ -14,72 +14,66 @@
         window.onload = function () {
 
             addtask.addEventListener('click', function () {
-               window.location.href = '/task/add';
+                window.location.href = '/task/add';
             });
 
             searchbtn.addEventListener('click', function () {
-               window.location.href = '/profile?title=' + searchtext.value;
+                window.location.href = '/profile?title=' + searchtext.value;
             });
 
             showall.addEventListener('click', function () {
-               window.location.href = '/profile';
+                window.location.href = '/profile';
             });
 
         }
     </script>
 </head>
 <body>
-    <h1>Welcome, <%=userName%> </h1>
-    <p>Click on header for sorting</p>
-    <div class="list panel panel-primary">
-        <table class="table table-striped sortable">
-            <thead>
-            <tr>
-                <th>Id</th>
-                <th id="title">Title</th>
-                <th>Description</th>
-                <th id="date">Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% for(var i = 0; i < data.length; i++) { %>
-            <tr> <td> <%-i+1%> </td> <td> <%-data[i].title%></td> <td> <%-data[i].text%> </td> <td> <%-data[i].postDate%></td> <tr>
-            <%}%>
-            </tbody>
-        </table>
+<h1>Welcome, <%=userName%> </h1>
+<p>Click on header for sorting</p>
+<div class="list panel panel-primary">
+    <table class="table table-striped sortable">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th id="title">Title</th>
+            <th>Description</th>
+            <th id="date">Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <%- include('tasklist', {data: data});%>
+        </tbody>
+    </table>
+</div>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <%- include('pages', {obj: obj});%>
+    </ul>
+</nav>
+
+<form action="/" method="post">
+    <input class="btn btn-danger" type="submit" value="Log out" id="logout">
+    <input class="btn btn-primary" type="button" value="Add task" id="addtask">
+    <input class="btn btn-dark" type="button" value="Show all" id="showall">
+</form>
+<br>
+<form action="/task/remove" method="post">
+
+    <div class="form-group">
+        <label for="searchtext">Enter title for remove</label>
+        <input class="form-control" type="text" id="remove" name="title">
     </div>
+    <input class="btn btn-primary" type="submit" value="Remove">
 
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-
-            <% for(var i = 1; i <= pageNum; i++) {%>
-
-            <li class="page-item"><a class="page-link" href="?page=<%=i%>"><%=i%></a></li>
-            <%} %>
-        </ul>
-    </nav>
-
-    <form action="/" method="post">
-        <input class="btn btn-danger" type="submit" value="Log out" id="logout">
-        <input class="btn btn-primary" type="button" value="Add task" id="addtask">
-        <input class="btn btn-dark" type="button" value="Show all" id="showall">
-    </form>
-    <br>
-    <form action="/task/remove" method="post">
-
-        <div class="form-group">
-            <label for="searchtext">Enter title for remove</label>
-            <input class="form-control" type="text" id="remove" name="title">
-        </div>
-        <input class="btn btn-primary" type="submit" value="Remove">
-
-        <div class="form-group">
-            <label for="inputpassword">Enter title for search</label>
-            <input class="form-control" type="text" id="searchtext">
-        </div>
-        <input id="searchbtn" class="btn btn-primary" type="button" value="Search">
-    </form>
-    <br>
+    <div class="form-group">
+        <label for="inputpassword">Enter title for search</label>
+        <input class="form-control" type="text" id="searchtext">
+    </div>
+    <input id="searchbtn" class="btn btn-primary" type="button" value="Search">
+</form>
+<br>
 
 </body>
 
