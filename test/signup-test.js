@@ -8,8 +8,15 @@ const expect = chai.expect;
 
 
 const userData = {
-    login: 'admin',
+    login: 'hasheduser',
+    email: 'asdsa@asads.ru',
     password: '12345'
+};
+
+const newUserData = {
+    login: 'newUser',
+    email: 'newemail@mail.ru',
+    password: '12345',
 };
 
 let authenticatedUser = request.agent(app);
@@ -51,10 +58,17 @@ describe('POST /signup', function (done) {
         request(app).post('/signup')
             .set('Accept', 'application/x-www-form-urlencoded')
             .set('Content-Type', 'application/x-www-form-urlencoded')
-            .send(authenticatedUser)
+            .send(userData)
             .expect(400, done);
     });
 
+    it('Sign up success - should return 200 (if error - maybe this user signed up, check signup-test.js newUserData)', function (done) {
+        request(app).post('/signup')
+            .set('Accept', 'application/x-www-form-urlencoded')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send(newUserData)
+            .expect(200, done)
+    });
 
 });
 

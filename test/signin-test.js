@@ -6,7 +6,7 @@ const app = require('../server');
 const expect = chai.expect;
 
 const userData = {
-    login: 'admin',
+    login: 'hasheduser',
     password: '12345'
 };
 
@@ -30,9 +30,13 @@ describe('GET /profile', function (done) {
             .expect(200, done);
     });
 
+
     it('should return a 302 response and redirect to /', function (done) {
         request(app).get('/profile')
             .expect('Location', '/')
             .expect(302, done);
-    })
+    });
+
+
 });
+

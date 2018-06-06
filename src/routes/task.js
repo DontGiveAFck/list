@@ -4,7 +4,7 @@ const task = require('../task');
 router.get('/add',(req, res) => {
 
     if(req.session.userId == undefined) {
-        res.redirect('/');
+        res.status(302).redirect('/');
     } else {
         res.render('addtask');
     }
@@ -13,7 +13,7 @@ router.get('/add',(req, res) => {
 router.post('/add', (req, res) => {
 
     if(req.session.userId == undefined) {
-        res.redirect('/');
+        res.status(400).redirect('/');
     } else {
         task.addTask(req, res);
     }
@@ -23,7 +23,7 @@ router.post('/add', (req, res) => {
 router.post('/remove', (req, res) => {
 
     if(req.session.userId == undefined) {
-        res.redirect('/');
+        res.status(400).redirect('/');
     } else {
         task.removeTask(req, res);
     }

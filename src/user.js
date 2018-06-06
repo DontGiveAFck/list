@@ -1,6 +1,7 @@
 const task = require('./task');
 const connection = require('./database');
 const bcrypt = require('bcrypt');
+const queries = require('./queries');
 
 const saltRounds = 10;
 
@@ -15,15 +16,13 @@ module.exports = {
 
         console.log(req.body);
 
-        connection.query('SELECT * FROM users WHERE login = ?', [login], (err, results) => {
+        connection.query(queries.selectFromUsersBylogin, [login], (err, results) => {
 
             if(results.length == 1) {
                 bcrypt.compare(password, results[0].password, (err, valid) => {
 
                     if (valid == true) {
-                        console.log(valid);
                         req.session.userId = results[0].id;
-                        console.log("userId " + req.session.userId);
                         req.session.userName = results[0].login;
 
                         task.getAllTasks(req, res);
@@ -42,7 +41,6 @@ module.exports = {
 
     signup: function (req, res) {
 
-        console.log("REQ BODY", req.body);
         let login = req.body.login;
         let password = req.body.password;
         let email = req.body.email;
@@ -51,7 +49,7 @@ module.exports = {
 
             if(err) throw err;
 
-            connection.query('INSERT INTO users (login, password, email) VALUES(?, ?, ?)', [login, hash, email], (err, results) => {
+            connection.query(queries.insertIntoUsersLoginPasswordEmail, [login, hash, email], (err, results) => {
 
                 if (err) {
                     if (err.code == 'ER_DUP_ENTRY') {

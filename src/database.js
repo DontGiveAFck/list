@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const config = require('./config');
+const queries = require('./queries');
 
 let connection = mysql.createConnection(config);
 
@@ -25,7 +26,7 @@ connection.connect((err) => {
             });
 
 
-            connection.query("create database todolist", (err) => {
+            connection.query(queries.createDatabase, (err) => {
 
                 if (err) {
                     console.log("Error: Can't create DATABASE 'todolist'");
@@ -33,13 +34,13 @@ connection.connect((err) => {
                     throw err;
                 }
 
-                connection.query("use todolist", (err) => {
+                connection.query(queries.useDatabase, (err) => {
 
                     if (err) throw err;
 
                     console.log("DATABASE 'todolist' created");
 
-                    connection.query("CREATE TABLE users(id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY, login VARCHAR(30) NOT NULL, password VARCHAR(256) NOT NULL, email VARCHAR(50) NOT NULL, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)", (err) => {
+                    connection.query(queries.createTableUsers, (err) => {
 
                         if (err) {
                             console.log("Error: Can't create TABLE 'users'");
@@ -47,7 +48,7 @@ connection.connect((err) => {
                         }
 
                         console.log("TABLE 'users' created");
-                        connection.query("CREATE TABLE tasks(id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY, title VARCHAR(50) NOT NULL, text TEXT NOT NULL, postDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, userId INT(10) UNSIGNED NOT NULL)", (err) => {
+                        connection.query(queries.createTableTasks, (err) => {
 
                             if (err) {
                                 console.log("Error: Can't create TABLE 'tasks'");
@@ -68,8 +69,6 @@ connection.connect((err) => {
                 });
             });
         }
-
-
     } else {
         console.log('connected to DB as id ' + connection.threadId);
     }

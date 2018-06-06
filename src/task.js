@@ -1,5 +1,6 @@
 const htmlspecialchars = require('htmlspecialchars');
 const connection = require('./database');
+const queries = require('./queries');
 
 module.exports = {
 
@@ -12,7 +13,7 @@ module.exports = {
 
         let from = (Number.parseInt(req.query.page) - 1) * itemsOnPage;
         console.log(from);
-        connection.query("SELECT * FROM tasks WHERE userId = ?", [userId], (err, results) => {
+        connection.query(queries.selectFromTasksByUserId, [userId], (err, results) => {
 
             if (err) throw err;
 
@@ -20,7 +21,7 @@ module.exports = {
 
             let data;
 
-            let c = connection.query("SELECT * FROM tasks WHERE userId = ? LIMIT ? OFFSET ?",[userId, itemsOnPage, from ], function (err, results, fields) {
+            let c = connection.query(queries.selectFromTasksByUserIdLimitOffset,[userId, itemsOnPage, from ], function (err, results, fields) {
 
                 if (err) throw err;
 
@@ -52,7 +53,7 @@ module.exports = {
 
         let from = (Number.parseInt(req.query.page) - 1) * itemsOnPage;
 
-        connection.query("SELECT * FROM tasks WHERE userId = ? AND title = ?", [userId, title], (err, results) => {
+        connection.query(queries.selectFromTasksByUserIdTitle, [userId, title], (err, results) => {
 
             if(err) throw err;
 
@@ -60,7 +61,7 @@ module.exports = {
 
             pageNum = Math.ceil(results.length / itemsOnPage);
 
-            let c = connection.query("SELECT * FROM tasks WHERE userId = ? AND title = ? LIMIT ? OFFSET ?",[userId, title, itemsOnPage, from], function (err, results, fields) {
+            let c = connection.query(queries.selectFromTasksByUserIdTitleLimitOffset,[userId, title, itemsOnPage, from], function (err, results, fields) {
 
                 data = results;
 
