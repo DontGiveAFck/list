@@ -4,7 +4,6 @@ router.get('/', (req, res) => {
     console.log(req.session.userId);
     if(!(req.session.userId == undefined)) {
         // logged
-        console.log('already logged');
         res.redirect('/profile');
     } else {
 

@@ -1,6 +1,8 @@
 const htmlspecialchars = require('htmlspecialchars');
 const connection = require('./database');
 const queries = require('./queries');
+const msg = require('./msgtouser');
+
 
 module.exports = {
 
@@ -89,11 +91,11 @@ module.exports = {
             res.redirect('/');
         }
     
-        let con = connection.query("INSERT INTO tasks (title, text, userId) VALUES(?, ?, ?)", [req.body.title, req.body.text, req.session.userId], function (err) {
+        let con = connection.query(queries.insertIntoTasks, [req.body.title, req.body.text, req.session.userId], function (err) {
 
             if(err) throw err;
             else {
-                res.send("Task " + htmlspecialchars(req.body.title) + " added!");
+                res.send(msg.TASK_ADDED + htmlspecialchars(req.body.title));
             }
         });
     },
@@ -103,14 +105,14 @@ module.exports = {
         let title = req.body.title;
         let userId = req.session.userId;
 
-        let con = connection.query("DELETE FROM tasks WHERE title = ? AND userId = ?", [title, userId], (err, results) => {
+        let con = connection.query(queries.deleteFromTasks, [title, userId], (err, results) => {
 
             if (err) throw err;
 
             if(results.length == 0) {
-                res.send("No tasks with title " + htmlspecialchars(title));
+                res.send(msg.NO_TASK + htmlspecialchars(title));
             } else {
-                res.send("Tasks with title " + htmlspecialchars(title) + " have been removed. " + '<a href="/profile">Profile</a>');
+                res.send(msg.TASK_REMOVED);
             }
         });
 

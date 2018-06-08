@@ -1,0 +1,50 @@
+
+> untitled@1.0.0 test /home/arsen/WebstormProjects/untitled
+> node_modules/mocha/bin/mocha ./test
+
+
+
+server started on port 3000
+undefined
+{ login: 'hasheduser', password: '12345' }
+{ login: 'hasheduser', password: '12345' }
+connected to DB as id 8
+true
+userId 13
+0
+11
+undefined
+{ login: 'hasheduser',
+  email: 'asdsa@asads.ru',
+  password: '12345' }
+{ login: 'hasheduser',
+  email: 'asdsa@asads.ru',
+  password: '12345' }
+true
+userId 13
+0
+11
+  GET /profile
+0
+11
+    ✓ should return a 200 response if the user is logged in
+    ✓ should return a 302 response and redirect to /
+
+  GET /signup
+    ✓ should return 302 and redirect to /profile
+    ✓ should return 200 and location /signup
+
+  POST /signup
+    ✓ Already logged - should return 302 and redirect to /profile
+REQ BODY { login: 'hasheduser',
+  email: 'asdsa@asads.ru',
+  password: '12345' }
+    ✓ User exists - should return 400 (148ms)
+REQ BODY { login: 'newUser',
+  email: 'newemail@mail.ru',
+  password: '12345' }
+    ✓ Sign up success - should return 200 (107ms)
+
+
+  7 passing (796ms)
+

@@ -2,6 +2,8 @@ const task = require('./task');
 const connection = require('./database');
 const bcrypt = require('bcrypt');
 const queries = require('./queries');
+const errors = require('./errors');
+const msg = require('./msgtouser');
 
 const saltRounds = 10;
 
@@ -27,13 +29,13 @@ module.exports = {
 
                         task.getAllTasks(req, res);
                     } else {
-                        res.send("<p>Incorrect login or password, please <a href='/'>Try again</a></p>");
+                        res.send();
                     }
                 });
 
             } else {
 
-                res.status(400).send("<p>Incorrect login or password, please <a href='/'>Try again</a></p>");
+                res.status(400).send(msg.INCORRECT_LOG_OR_PASS);
             }
         });
 
@@ -52,13 +54,13 @@ module.exports = {
             connection.query(queries.insertIntoUsersLoginPasswordEmail, [login, hash, email], (err, results) => {
 
                 if (err) {
-                    if (err.code == 'ER_DUP_ENTRY') {
-                        res.status(400).send("User with login '" + login + "' or email '" + email + "' already exist.");
+                    if (err.code == errors.ERR_DUP_ENTRY) {
+                        res.status(400).send(msg.USER_EXISTS + login + " " + email);
                     } else {
                         throw err;
                     }
                 } else {
-                    res.render('signup', {answer: "Successful! Go to main page"});
+                    res.render('signup', {answer: msg.SUCCESFUL});
                 }
             });
         });

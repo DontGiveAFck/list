@@ -10,4 +10,6 @@ module.exports = {
     useDatabase: "use todolist",
     createTableUsers: "CREATE TABLE users(id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY, login VARCHAR(30) NOT NULL, password VARCHAR(256) NOT NULL, email VARCHAR(50) NOT NULL, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)",
     createTableTasks: "CREATE TABLE tasks(id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY, title VARCHAR(50) NOT NULL, text TEXT NOT NULL, postDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, userId INT(10) UNSIGNED NOT NULL)",
+    insertIntoTasks: "INSERT INTO tasks (title, text, userId) VALUES(?, ?, ?)",
+    deleteFromTasks: "DELETE FROM tasks WHERE title = ? AND userId = ?"
 };
